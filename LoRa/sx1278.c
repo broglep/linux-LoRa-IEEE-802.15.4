@@ -40,6 +40,7 @@
 #include <linux/timer.h>
 #include <linux/device.h>
 #include <linux/acpi.h>
+#include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/spinlock.h>
 #include <linux/spi/spi.h>
@@ -1627,13 +1628,11 @@ sx1278_spi_probe_err:
 }
 
 /* The SPI remove callback function. */
-static int sx1278_spi_remove(struct spi_device *spi)
+static void sx1278_spi_remove(struct spi_device *spi)
 {
 	struct sx1278_phy *phy = spi_get_drvdata(spi);
 
 	sx1278_ieee_del(phy);
-
-	return 0;
 }
 
 #define __DRIVER_NAME	"sx1278"
