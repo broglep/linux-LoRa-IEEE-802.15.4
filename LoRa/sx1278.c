@@ -47,6 +47,19 @@
 #include <linux/regmap.h>
 #include <net/mac802154.h>
 
+#define DEBUG 1
+
+
+#ifdef DEBUG
+// Workaround for debugging on raspberrypi os (no dynamic debug support)
+
+#ifdef dev_dbg
+#undef dev_dbg
+#endif
+
+#define dev_dbg(...) dev_info(__VA_ARGS__)
+#endif
+
 /*------------------------------ LoRa Functions ------------------------------*/
 
 #ifndef F_XOSC
