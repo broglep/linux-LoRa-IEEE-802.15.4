@@ -1405,6 +1405,17 @@ sx1278_ieee_statemachine(struct ieee802154_hw *hw)
 	flags = sx127X_get_loraallflag(phy->map);
 	state = sx127X_get_state(phy->map);
 
+#ifdef DEBUG
+    if (flags & (SX127X_FLAG_PAYLOADCRCERROR)) {
+        dev_dbg(regmap_get_device(phy->map), "PAYLOAD CRC ERROR\n");
+    } else if (flags & (SX127X_FLAG_RXTIMEOUT)) {
+        dev_dbg(regmap_get_device(phy->map), "RX TIMEOUT\n");
+    } else if (flags & (SX127X_FLAG_CADDETECTED)) {
+        dev_dbg(regmap_get_device(phy->map), "CAD DETECTED\n");
+    } else if (flags & (SX127X_FLAG_CADDONE)) {
+        dev_dbg(regmap_get_device(phy->map), "CAD DONE\n");
+    }
+#endif
 	if (flags & (SX127X_FLAG_RXTIMEOUT | SX127X_FLAG_PAYLOADCRCERROR)) {
 		sx127X_clear_loraflag(phy->map, SX127X_FLAG_RXTIMEOUT
 						| SX127X_FLAG_PAYLOADCRCERROR
@@ -1414,12 +1425,14 @@ sx1278_ieee_statemachine(struct ieee802154_hw *hw)
 		spin_unlock_irqrestore(&phy->buf_lock, f);
 		do_next_rx = true;
 	} else if (flags & SX127X_FLAG_RXDONE) {
+        dev_dbg(regmap_get_device(phy->map), "RX DONE\n");
 		sx1278_ieee_rx_complete(phy->hw);
 		sx127X_clear_loraflag(phy->map, SX127X_FLAG_RXDONE);
 		do_next_rx = true;
 	}
 
 	if (flags & SX127X_FLAG_TXDONE) {
+        dev_dbg(regmap_get_device(phy->map), "TX DONE\n");
 		sx1278_ieee_tx_complete(phy->hw);
 		sx127X_clear_loraflag(phy->map, SX127X_FLAG_TXDONE);
 		phy->tx_delay = 10;
